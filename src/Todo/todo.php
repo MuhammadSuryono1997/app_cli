@@ -117,7 +117,8 @@ class Todos extends Command
         $filter_data = array_filter($data['todos'], function($val) use($data_filter){return $val['id']==$data_filter[0];});
         foreach ($filter_data as $key => $value) 
         {
-            $data['todos'][$key]['title'] = array_slice($data_filter, 1,count($data));
+            $data['todos'][$key]['title'] = join(" ",array_slice($data_filter, 1,count($data_filter)));
+            echo join(" ", array_slice($data_filter, 1,count($data_filter)));
         }
         $this->write_data($data);
     }
