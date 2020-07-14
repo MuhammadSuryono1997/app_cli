@@ -2,23 +2,18 @@
     "todos": [
         {
             "id": 1,
-            "title": "Morning meeting",
+            "title": null,
             "complete": true
         },
         {
             "id": 2,
-            "title": "update",
-            "complete": false
+            "title": "Data",
+            "complete": true
         },
         {
             "id": 3,
             "title": "Lunch with Joy",
             "complete": true
-        },
-        {
-            "id": 4,
-            "title": "Presentation new project",
-            "complete": false
         }
     ]
 }

@@ -22,8 +22,10 @@ class Todos extends Command
             new InputDefinition(array(
                 new InputOption("list", "l", InputOption::VALUE_NONE, "Get data todos"),
                 new InputOption("add", "a", InputOption::VALUE_REQUIRED, "add Data"),
-                new InputOption("update", "u", InputOption::VALUE_REQUIRED, "update data example -u '2 New data'"),
-                new InputOption("delete", "d", InputOption::VALUE_REQUIRED, "delete data example -u '2 New data'")
+                new InputOption("update", "u", InputOption::VALUE_REQUIRED, "update data example -u --update '2 New data'"),
+                new InputOption("delete", "d", InputOption::VALUE_REQUIRED, "delete data example -d or --delete '2'"),
+                new InputOption("clear", "c", InputOption::VALUE_NONE, "clear all data"),
+                new InputOption("done", "f", InputOption::VALUE_REQUIRED, "update status example -f '8'")
             ))
         )
         // ->addOption("list", "l", InputOption::VALUE_OPTIONAL, "Get data todos")
@@ -36,6 +38,9 @@ class Todos extends Command
         $list = $input->getOption("list");
         $add = $input->getOption("add");
         $edit = $input->getOption("update");
+        $delete = $input->getOption("delete");
+        $clear = $input->getOption("clear");
+        $done = $input->getOption("done");
 
         if ($list == 1) 
         {
@@ -48,6 +53,18 @@ class Todos extends Command
         elseif ($edit) 
         {
             $output->writeln($this->edit_data($edit));
+        }
+        elseif ($delete) 
+        {
+            $output->writeln($this->delete_data($delete));
+        }
+        elseif ($clear == 1) 
+        {
+            $output->writeln($this->clear_data());
+        }
+        elseif ($done) 
+        {
+            $output->writeln($this->done_data($done));
         }
         
         return Command::SUCCESS;
@@ -99,6 +116,26 @@ class Todos extends Command
         $this->write_data($data);
     }
 
+    public function done_data($data)
+    {
+        $data_filter = explode(" ",$data);
+        $data = $this->get_data();
+        $filter_data = array_filter($data['todos'], function($val) use($data_filter){return $val['id']==$data_filter[0];});
+        foreach ($filter_data as $key => $value) 
+        {
+            if($data['todos'][$key]['complete'] == "")
+            {
+                $data['todos'][$key]['complete'] = true;
+            }
+            elseif ($data['todos'][$key]['complete'] == 1) 
+            {
+                $data['todos'][$key]['complete'] = false;
+            }
+        }
+        print_r($data);
+        $this->write_data($data);
+    }
+
     public function delete_data($data)
     {
         $data_filter = explode(" ",$data);
@@ -106,10 +143,15 @@ class Todos extends Command
         $filter_data = array_filter($data['todos'], function($val) use($data_filter){return $val['id']==$data_filter[0];});
         foreach ($filter_data as $key => $value) 
         {
-            unset($data['todos'][$key]);
-            array_values($data['todos']);
+            array_splice($data['todos'], $key, 1);
         }
         $this->write_data($data);
+    }
+
+    public function clear_data()
+    {
+        $clear_data = ["todos"=> []];
+        $this->write_data($clear_data);
     }
 
     public function write_data($new_data)
