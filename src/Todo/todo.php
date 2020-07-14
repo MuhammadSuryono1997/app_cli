@@ -25,7 +25,8 @@ class Todos extends Command
                 new InputOption("update", "u", InputOption::VALUE_REQUIRED, "update data example -u --update '2 New data'"),
                 new InputOption("delete", "d", InputOption::VALUE_REQUIRED, "delete data example -d or --delete '2'"),
                 new InputOption("clear", "c", InputOption::VALUE_NONE, "clear all data"),
-                new InputOption("done", "f", InputOption::VALUE_REQUIRED, "update status example -f '8'")
+                new InputOption("done", "f", InputOption::VALUE_REQUIRED, "update status example -f '8'"),
+                new InputOption("undone", "z", InputOption::VALUE_REQUIRED, "update status example -z or --undone '8'")
             ))
         )
         // ->addOption("list", "l", InputOption::VALUE_OPTIONAL, "Get data todos")
@@ -41,6 +42,7 @@ class Todos extends Command
         $delete = $input->getOption("delete");
         $clear = $input->getOption("clear");
         $done = $input->getOption("done");
+        $undone = $input->getOption("undone");
 
         if ($list == 1) 
         {
@@ -66,6 +68,10 @@ class Todos extends Command
         {
             $output->writeln($this->done_data($done));
         }
+        elseif ($undone) 
+        {
+            $output->writeln($this->undone_data($undone));
+        }
         
         return Command::SUCCESS;
     }
@@ -81,7 +87,7 @@ class Todos extends Command
     {
         $data = $this->get_data()['todos'];
         $show = "Todo List\n";
-        $data = array_map(function($data){return $data['id']." ".$data['title'];}, $data);
+        $data = array_map(function($data){return $data['id']." ".$data['title'].$data['complete'];}, $data);
         foreach ($data as $value) 
         {
             $show .= $value."\n";
@@ -98,7 +104,7 @@ class Todos extends Command
 
         $data_baru['id'] = $old_id + 1;
         $data_baru['title'] = $new_data;
-        $data_baru['complete'] = false;
+        $data_baru['complete'] = "";
         array_push($old_data['todos'], $data_baru);
         $this->write_data($old_data);
         return true;
@@ -125,14 +131,24 @@ class Todos extends Command
         {
             if($data['todos'][$key]['complete'] == "")
             {
-                $data['todos'][$key]['complete'] = true;
-            }
-            elseif ($data['todos'][$key]['complete'] == 1) 
-            {
-                $data['todos'][$key]['complete'] = false;
+                $data['todos'][$key]['complete'] = "(DONE)";
             }
         }
-        print_r($data);
+        $this->write_data($data);
+    }
+
+    public function undone_data($data)
+    {
+        $data_filter = explode(" ",$data);
+        $data = $this->get_data();
+        $filter_data = array_filter($data['todos'], function($val) use($data_filter){return $val['id']==$data_filter[0];});
+        foreach ($filter_data as $key => $value) 
+        {
+            if ($data['todos'][$key]['complete'] == "(DONE)") 
+            {
+                $data['todos'][$key]['complete'] = "";
+            }
+        }
         $this->write_data($data);
     }
 

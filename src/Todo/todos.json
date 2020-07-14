@@ -2,18 +2,18 @@
     "todos": [
         {
             "id": 1,
-            "title": null,
-            "complete": true
-        },
-        {
-            "id": 2,
-            "title": "Data",
-            "complete": true
+            "title": "Sayur",
+            "complete": ""
         },
         {
             "id": 3,
             "title": "Lunch with Joy",
-            "complete": true
+            "complete": ""
+        },
+        {
+            "id": 4,
+            "title": "Sayur Bayem",
+            "complete": ""
         }
     ]
 }
